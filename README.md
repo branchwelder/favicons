@@ -1,0 +1,2 @@
+# favicon
+Make a favicon.
