@@ -1,0 +1,14 @@
+{
+  "scripts": {
+    "dev": "vite",
+    "host": "vite --host",
+    "build": "vite build",
+    "preview": "vite build && vite preview",
+    "deploy": "vite build --base=/favicon/ && gh-pages -d dist"
+  },
+  "dependencies": {
+    "gh-pages": "^6.0.0",
+    "lit-html": "^2.8.0",
+    "vite": "^4.4.9"
+  }
+}
