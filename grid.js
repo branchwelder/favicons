@@ -12,12 +12,12 @@ function makeGrid({ state }, { canvas }) {
 
     ctx.beginPath();
 
-    for (let x = 0; x <= bitmap.width; x++) {
+    for (let x = 0; x < bitmap.width; x++) {
       ctx.moveTo(x * scale, 0);
       ctx.lineTo(x * scale, bitmap.height * scale + 1);
     }
 
-    for (let y = 0; y <= bitmap.height; y++) {
+    for (let y = 0; y < bitmap.height; y++) {
       ctx.moveTo(0, y * scale);
       ctx.lineTo(bitmap.width * scale + 1, y * scale);
     }
@@ -25,15 +25,12 @@ function makeGrid({ state }, { canvas }) {
     ctx.stroke();
   }
 
-  draw();
-
   return {
     syncState(state) {
-      if (
-        state.bitmap.width != bitmap.width ||
-        state.bitmap.height != bitmap.height
-      ) {
-        ({ scale, bitmap } = state);
+      if (scale != state.scale) {
+        scale = state.scale;
+        canvas.width = 16 * scale;
+        canvas.height = 16 * scale;
         draw();
       }
     },

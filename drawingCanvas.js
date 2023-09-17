@@ -1,4 +1,4 @@
-function canvasExtension({ state, dispatch }, { canvas }) {
+function canvasExtension({ state }, { canvas }) {
   let { scale, palette, bitmap } = state;
 
   let lastDrawn = null;
@@ -23,18 +23,22 @@ function canvasExtension({ state, dispatch }, { canvas }) {
     lastDrawn = bitmap;
   }
 
-  draw();
-
   return {
     syncState(state) {
-      if (state.scale != scale) {
-        ({ scale, bitmap } = state);
+      if (palette != state.palette) {
+        palette = state.palette;
         lastDrawn = null;
-        updateDom();
+      }
+
+      if (scale != state.scale) {
+        scale = state.scale;
+        canvas.width = 16 * scale;
+        canvas.height = 16 * scale;
+        lastDrawn = null;
       }
 
       if (lastDrawn != state.bitmap) {
-        ({ bitmap } = state);
+        bitmap = state.bitmap;
         draw();
       }
     },

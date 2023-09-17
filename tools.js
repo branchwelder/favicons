@@ -3,7 +3,7 @@ export function brush(start, state, dispatch) {
     const updated = state.bitmap.line(
       { x: start.x, y: start.y },
       { x: newPos.x, y: newPos.y },
-      state.paletteIndex
+      state.activeColor
     );
 
     start = newPos;
@@ -16,7 +16,7 @@ export function brush(start, state, dispatch) {
 
 export function flood(start, state, dispatch) {
   function onMove({ x, y }, state) {
-    dispatch({ bitmap: state.bitmap.flood({ x, y }, state.paletteIndex) });
+    dispatch({ bitmap: state.bitmap.flood({ x, y }, state.activeColor) });
   }
 
   onMove(start, state);
@@ -30,7 +30,7 @@ export function rect(start, state, dispatch) {
     const updated = state.bitmap.rect(
       { x: start.x, y: start.y },
       { x, y },
-      state.paletteIndex
+      state.activeColor
     );
 
     dispatch({ bitmap: updated });
@@ -45,7 +45,7 @@ export function line(start, state, dispatch) {
       bitmap: state.bitmap.line(
         { x: start.x, y: start.y },
         { x, y },
-        state.paletteIndex
+        state.activeColor
       ),
     });
   }

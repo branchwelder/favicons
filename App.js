@@ -1,26 +1,23 @@
-function updateState(state, action) {
-  return { ...state, ...action };
-}
+// function updateState(state, action) {
+//   return { ...state, ...action };
+// }
 
 export class App {
-  constructor({ state, components }) {
+  constructor({ state, dispatch, components }) {
     this.state = state;
     this.initialized = false;
 
-    this.dispatch = (action) => {
-      const changes = Object.keys(action);
+    // this.dispatch = (action) => {
+    //   const changes = Object.keys(action);
 
-      state = updateState(state, action);
+    //   state = updateState(state, action);
 
-      this.syncState(state, changes);
-    };
+    //   this.syncState(state, changes);
+    // };
 
-    this.components = components.flat().map((component) =>
-      component({
-        state,
-        dispatch: this.dispatch,
-      })
-    );
+    this.components = components
+      .flat()
+      .map((component) => component({ state, dispatch }));
 
     // tell components they've been attached to the DOM
     // This might be prone to breaking?
