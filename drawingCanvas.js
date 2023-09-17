@@ -3,6 +3,19 @@ function canvasExtension({ state }, { canvas }) {
 
   let lastDrawn = null;
 
+  function sizeCanvas() {
+    const canvasSize = scale * 16;
+    const cssSize = canvasSize / devicePixelRatio;
+
+    canvas.width = canvasSize;
+    canvas.height = canvasSize;
+
+    canvas.style.cssText = `width: ${cssSize}px; height: ${cssSize}`;
+
+    lastDrawn = null;
+    draw();
+  }
+
   function draw() {
     // Draws only the pixels that have changed
     const ctx = canvas.getContext("2d");
@@ -23,6 +36,8 @@ function canvasExtension({ state }, { canvas }) {
     lastDrawn = bitmap;
   }
 
+  sizeCanvas();
+
   return {
     syncState(state) {
       if (palette != state.palette) {
@@ -32,8 +47,7 @@ function canvasExtension({ state }, { canvas }) {
 
       if (scale != state.scale) {
         scale = state.scale;
-        canvas.width = 16 * scale;
-        canvas.height = 16 * scale;
+        sizeCanvas();
         lastDrawn = null;
       }
 

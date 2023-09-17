@@ -16,7 +16,7 @@ let siteContainer,
   editorContainer,
   gridCanvas,
   outlineCanvas,
-  faviconCanvas;
+  editorCanvas;
 
 let state = {
   activeColor: 0,
@@ -183,30 +183,21 @@ function measure() {
 
   const bbox = siteContainer.getBoundingClientRect();
 
-  const actualX = bbox.width * devicePixelRatio;
-  const actualY =
-    (bbox.height - paletteHeight - toolboxHeight) * devicePixelRatio;
+  const availableX = bbox.width * devicePixelRatio;
+  const availableY = (bbox.height - toolboxHeight - 50 - 20) * devicePixelRatio;
 
-  const scale =
-    Math.min(Math.floor(actualX / 16), Math.floor(actualY / 16)) /
-    devicePixelRatio;
+  const scale = Math.min(
+    Math.floor(availableX / 16),
+    Math.floor(availableY / 16)
+  );
 
-  const canvasSize = Math.floor(16 * scale);
+  const canvasSize = scale * 16;
+  const cssSize = canvasSize / devicePixelRatio;
 
-  // siteContainer.style.cssText = `flex: 1 1 ${canvasSize}px;`;
-
-  // siteContainer.width = 16 * scale;
-  paletteContainer.style.cssText = `width: ${canvasSize}px;`;
-
-  // editorContainer.width = 16 * scale;
-  // editorContainer.height = 16 * scale;
+  paletteContainer.style.cssText = `width: ${cssSize}px;`;
 
   return scale;
 }
-
-const resizeObserver = new ResizeObserver(() => {
-  dispatch({ scale: measure(), bitmap: new Bimp(16, 16, state.bitmap.pixels) });
-});
 
 window.onload = () => {
   render(view(), document.body);
@@ -214,7 +205,7 @@ window.onload = () => {
   siteContainer = document.getElementById("site");
   gridCanvas = document.getElementById("grid");
   outlineCanvas = document.getElementById("outline");
-  faviconCanvas = document.getElementById("art");
+  editorCanvas = document.getElementById("art");
   editorContainer = document.getElementById("editor-container");
   paletteContainer = document.getElementById("color-palette");
   toolsContainer = document.getElementById("tool-container");
@@ -225,7 +216,7 @@ window.onload = () => {
     state,
     dispatch,
     components: [
-      drawingCanvas({ canvas: faviconCanvas }),
+      drawingCanvas({ canvas: editorCanvas }),
       grid({ canvas: gridCanvas }),
       pointerTracker({ target: outlineCanvas }),
       outline({ canvas: outlineCanvas }),
@@ -237,6 +228,8 @@ window.onload = () => {
   });
 
   r();
-
-  resizeObserver.observe(siteContainer);
 };
+
+window.addEventListener("resize", (event) => {
+  dispatch({ scale: measure(), bitmap: new Bimp(16, 16, state.bitmap.pixels) });
+});

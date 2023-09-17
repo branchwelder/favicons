@@ -5,6 +5,16 @@ function outlineExtension(
   let { scale, bitmap, pos } = state;
   const px = 1 / devicePixelRatio;
 
+  function sizeCanvas() {
+    const canvasSize = scale * 16;
+    const cssSize = canvasSize / devicePixelRatio;
+
+    canvas.width = canvasSize;
+    canvas.height = canvasSize;
+
+    canvas.style.cssText = `width: ${cssSize}px; height: ${cssSize}`;
+  }
+
   function draw() {
     const ctx = canvas.getContext("2d");
     ctx.resetTransform();
@@ -43,12 +53,12 @@ function outlineExtension(
     // ctx.stroke();
   }
 
+  sizeCanvas();
   return {
     syncState(state) {
       if (scale != state.scale) {
         scale = state.scale;
-        canvas.width = 16 * scale;
-        canvas.height = 16 * scale;
+        sizeCanvas();
       }
       if (state.pos != pos) {
         pos = state.pos;

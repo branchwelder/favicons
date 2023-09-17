@@ -1,6 +1,17 @@
 function makeGrid({ state }, { canvas }) {
   let { scale, bitmap } = state;
 
+  function sizeCanvas() {
+    const canvasSize = scale * 16;
+    const cssSize = canvasSize / devicePixelRatio;
+
+    canvas.width = canvasSize;
+    canvas.height = canvasSize;
+
+    canvas.style.cssText = `width: ${cssSize}px; height: ${cssSize}`;
+    draw();
+  }
+
   function draw() {
     const ctx = canvas.getContext("2d");
     ctx.resetTransform();
@@ -25,13 +36,13 @@ function makeGrid({ state }, { canvas }) {
     ctx.stroke();
   }
 
+  sizeCanvas();
+
   return {
     syncState(state) {
       if (scale != state.scale) {
         scale = state.scale;
-        canvas.width = 16 * scale;
-        canvas.height = 16 * scale;
-        draw();
+        sizeCanvas();
       }
     },
   };

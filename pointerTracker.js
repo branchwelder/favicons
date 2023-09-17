@@ -4,8 +4,12 @@ export function pointerTrackingExtension({ state, dispatch }, { target }) {
   function posAtCoords(clientX, clientY) {
     const bounds = target.getBoundingClientRect();
 
-    const x = Math.floor((clientX - bounds.x) / state.scale);
-    const y = Math.floor((clientY - bounds.y) / state.scale);
+    const x = Math.floor(
+      ((clientX - bounds.x) / state.scale) * devicePixelRatio
+    );
+    const y = Math.floor(
+      ((clientY - bounds.y) / state.scale) * devicePixelRatio
+    );
 
     return { x, y };
   }
