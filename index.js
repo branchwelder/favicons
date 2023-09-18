@@ -262,6 +262,7 @@ window.onload = () => {
     return {
       syncState(state) {
         if (state.bitmap == bitmap) return;
+        console.log(Array.from(bitmap.pixels));
         bitmap = state.bitmap;
         const existingIcons = document.querySelectorAll(
           'link[rel="shortcut icon"]'
