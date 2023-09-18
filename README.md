@@ -3,6 +3,9 @@
 Make a favicon.
 
 - 16x16 pixel editor
+- mini favicon view
+- download favicon
+- show favicon in toolbar
 - grid overlay
 - palette editors: brush, flood, line, rect, shift
 - color palette
@@ -12,10 +15,7 @@ Make a favicon.
 
 todo
 
-- mini favicon view
-- download favicon
-- show favicon in toolbar
+- mobile pointer events
 - hide/show grid
 - undo
 - change cursor to tool
-- mobile pointer events
