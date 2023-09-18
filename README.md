@@ -2,6 +2,8 @@
 
 Make a favicon.
 
+Live at [https://twigg.gg/favicons/](https://twigg.gg/favicons/).
+
 - 16x16 pixel editor
 - mini favicon view
 - download favicon
