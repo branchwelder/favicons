@@ -3,10 +3,10 @@ function makeGrid({ state }, { canvas }) {
 
   function sizeCanvas() {
     const canvasSize = scale * 16;
-    const cssSize = canvasSize / devicePixelRatio;
+    const cssSize = canvasSize / devicePixelRatio - devicePixelRatio;
 
-    canvas.width = canvasSize;
-    canvas.height = canvasSize;
+    canvas.width = canvasSize - 1;
+    canvas.height = canvasSize - 1;
 
     canvas.style.cssText = `width: ${cssSize}px; height: ${cssSize}`;
     draw();
@@ -17,7 +17,6 @@ function makeGrid({ state }, { canvas }) {
     ctx.resetTransform();
 
     ctx.translate(-0.5, -0.5);
-    // ctx.imageSmoothingEnabled = false;
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 

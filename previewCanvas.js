@@ -1,14 +1,15 @@
 function canvasExtension({ state }, { canvas }) {
-  let { scale, palette, bitmap } = state;
+  let { palette, bitmap } = state;
 
   let lastDrawn = null;
+  const scale = 1;
 
   function sizeCanvas() {
-    const canvasSize = scale * 16;
+    const canvasSize = 16;
     const cssSize = canvasSize / devicePixelRatio - devicePixelRatio;
 
-    canvas.width = canvasSize - 1;
-    canvas.height = canvasSize - 1;
+    canvas.width = canvasSize;
+    canvas.height = canvasSize;
 
     canvas.style.cssText = `width: ${cssSize}px; height: ${cssSize}`;
 
@@ -46,11 +47,11 @@ function canvasExtension({ state }, { canvas }) {
         lastDrawn = null;
       }
 
-      if (scale != state.scale) {
-        scale = state.scale;
-        sizeCanvas();
-        lastDrawn = null;
-      }
+      // if (scale != state.scale) {
+      //   scale = state.scale;
+      //   sizeCanvas();
+      //   lastDrawn = null;
+      // }
 
       if (lastDrawn != state.bitmap) {
         bitmap = state.bitmap;
@@ -60,6 +61,6 @@ function canvasExtension({ state }, { canvas }) {
   };
 }
 
-export function drawingCanvas(options = {}) {
+export function previewCanvas(options = {}) {
   return (config) => canvasExtension(config, options);
 }

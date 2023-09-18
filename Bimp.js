@@ -15,8 +15,6 @@ export class Bimp {
   }
 
   static fromTile(width, height, tile) {
-    // tile should be a Bimp
-
     let tiled = [];
 
     for (let y = 0; y < height; y++) {

@@ -5,7 +5,10 @@ Make a favicon.
 - 16x16 pixel editor
 - grid overlay
 - palette editors: brush, flood, line, rect, shift
-- add/delete/edit color in color palette
+- color palette
+  - drawn colors update
+  - transparency
+  - add/delete/edit color in color palette
 
 todo
 

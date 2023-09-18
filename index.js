@@ -6,12 +6,18 @@ import { pointerTracker } from "./pointerTracker";
 import { outline } from "./outline";
 import { brush, flood, line, rect, shift } from "/tools";
 import { drawingCanvas } from "./drawingCanvas";
+import { previewCanvas } from "./previewCanvas";
 import { toolbox } from "./toolbox";
 
-let app;
+import jscolor from "@eastdesire/jscolor";
+
+import fav from "./start.json";
+
+let app, previewApp;
 
 let siteContainer,
   paletteContainer,
+  preview,
   toolsContainer,
   editorContainer,
   gridCanvas,
@@ -22,18 +28,21 @@ let state = {
   activeColor: 0,
   activeTool: "brush",
   scale: 0,
-  bitmap: Bimp.empty(16, 16, 1),
+  bitmap: Bimp.fromJSON(fav),
   palette: [
-    "#20344c",
-    "#faead6",
-    "#de7895",
-    "#f75060",
-    "#f7885f",
-    "#f2c469",
-    "#b1d36f",
-    "#3ee0cf",
-    "#0091c2",
-    "#ad6dca",
+    "#00000000",
+    "#000000ff",
+    "#ffffffff",
+    "#44AA90FF",
+    "#faead6ff",
+    "#de7895ff",
+    "#f75060ff",
+    "#f7885fff",
+    "#f2c469ff",
+    "#b1d36fff",
+    "#3ee0cfff",
+    "#0091c2ff",
+    "#ad6dcaff",
   ],
   paletteEdit: false,
 };
@@ -64,6 +73,20 @@ function dispatch(action) {
   const changes = Object.keys(action);
   state = updateState(state, action);
   app.syncState(state, changes);
+  previewApp.syncState(state, changes);
+}
+
+function download() {
+  const downloadAnchorNode = document.createElement("a");
+
+  downloadAnchorNode.setAttribute(
+    "href",
+    editorCanvas.toDataURL("image/x-icon")
+  );
+  downloadAnchorNode.setAttribute("download", "favicon.ico");
+  document.body.appendChild(downloadAnchorNode);
+  downloadAnchorNode.click();
+  downloadAnchorNode.remove();
 }
 
 function deleteColor(index) {
@@ -81,13 +104,27 @@ function deleteColor(index) {
   dispatch({ palette: newPalette, bitmap: new Bimp(16, 16, newBitmap) });
 }
 
-function editColor(index, newColor) {
+function updatePalette(picker, index) {
   const newPalette = [...state.palette];
-  newPalette[index] = newColor;
+  newPalette[index] = picker.toRGBAString();
   dispatch({
     palette: newPalette,
     bitmap: new Bimp(16, 16, state.bitmap.pixels),
   });
+}
+
+function editColor(index) {
+  const target = document.getElementById(`color-${index}`);
+  if (!target.jscolor) {
+    const picker = new jscolor(target, {
+      preset: "dark large",
+      format: "hexa",
+      value: state.palette[index],
+      onInput: () => updatePalette(picker, index),
+      previewElement: null,
+    });
+  }
+  target.jscolor.show();
 }
 
 function view() {
@@ -101,6 +138,15 @@ function view() {
             <i class="fa-solid ${iconMap[tool]}"></i>
           </button>`
       )}
+
+      <canvas
+        id="preview"
+        width="${16 * devicePixelRatio}px"
+        height="${16 * devicePixelRatio}px"></canvas>
+
+      <button @click=${() => download()}>
+        <i class="fa-solid fa-download"></i>
+      </button>
     </div>
 
     <div id="editor-container">
@@ -115,29 +161,6 @@ function view() {
         @click=${() => dispatch({ editingPalette: !state.editingPalette })}>
         <i class="fa-solid fa-pen"></i>
       </button>
-      ${state.palette.map(
-        (hex, index) =>
-          html`<div
-            style="background-color: ${hex}"
-            class="color-select ${index == state.activeColor ? "selected" : ""}"
-            @click=${() => dispatch({ activeColor: index })}>
-            ${state.editingPalette
-              ? html`
-                  <button class="delete" @click=${() => deleteColor(index)}>
-                    <i class="fa-solid fa-x"></i>
-                  </button>
-                  <label class="edit-color" for="color-${index}">
-                    <i class="fa-solid fa-pen"></i>
-                  </label>
-                  <input
-                    id="color-${index}"
-                    type="color"
-                    value="${hex}"
-                    @input=${(e) => editColor(index, e.target.value)} />
-                `
-              : ""}
-          </div>`
-      )}
       <button
         style="aspect-ratio: 1;"
         @click=${() => {
@@ -147,11 +170,29 @@ function view() {
         }}>
         <i class="fa-solid fa-plus"></i>
       </button>
+      ${state.palette.map(
+        (hexa, index) =>
+          html`<div
+            style="--current: ${hexa};"
+            class="color-select ${index == state.activeColor ? "selected" : ""}"
+            @click=${() => dispatch({ activeColor: index })}>
+            ${state.editingPalette && index > 0
+              ? html`
+                  <button class="delete" @click=${() => deleteColor(index)}>
+                    <i class="fa-solid fa-x"></i>
+                  </button>
+                  <button
+                    id="color-${index}"
+                    class="edit-color"
+                    @click=${(e) => editColor(index, e.currentTarget)}></button>
+                  <div class="editicon" @click=${(e) => editColor(index)}>
+                    <i class="fa-solid fa-pen"></i>
+                  </div>
+                `
+              : ""}
+          </div>`
+      )}
     </div>
-    <!-- <canvas
-      id="actual-size"
-      width="${16 * devicePixelRatio}px"
-      height="${16 * devicePixelRatio}px"></canvas> -->
   </div>`;
 }
 
@@ -184,7 +225,7 @@ function measure() {
   const bbox = siteContainer.getBoundingClientRect();
 
   const availableX = bbox.width * devicePixelRatio;
-  const availableY = (bbox.height - toolboxHeight - 50 - 20) * devicePixelRatio;
+  const availableY = (bbox.height - toolboxHeight - 150) * devicePixelRatio;
 
   const scale = Math.min(
     Math.floor(availableX / 16),
@@ -195,6 +236,7 @@ function measure() {
   const cssSize = canvasSize / devicePixelRatio;
 
   paletteContainer.style.cssText = `width: ${cssSize}px;`;
+  toolsContainer.style.cssText = `width: ${cssSize}px;`;
 
   return scale;
 }
@@ -205,12 +247,44 @@ window.onload = () => {
   siteContainer = document.getElementById("site");
   gridCanvas = document.getElementById("grid");
   outlineCanvas = document.getElementById("outline");
+  preview = document.getElementById("preview");
   editorCanvas = document.getElementById("art");
   editorContainer = document.getElementById("editor-container");
   paletteContainer = document.getElementById("color-palette");
   toolsContainer = document.getElementById("tool-container");
 
   state.scale = measure();
+
+  function sync({ state }) {
+    let { bitmap } = state;
+    return {
+      syncState(state) {
+        if (state.bitmap == bitmap) return;
+        bitmap = state.bitmap;
+        const existingIcons = document.querySelectorAll(
+          'link[rel="shortcut icon"]'
+        );
+        for (let i = 0, len = existingIcons.length; i < len; i++) {
+          document.head.removeChild(existingIcons[i]);
+        }
+        const link = document.createElement("link");
+        link.type = "image/x-icon";
+        link.rel = "shortcut icon";
+        link.href = editorCanvas.toDataURL("image/x-icon");
+        document.getElementsByTagName("head")[0].appendChild(link);
+      },
+    };
+  }
+
+  previewApp = new App({
+    state,
+    dispatch,
+    components: [
+      previewCanvas({
+        canvas: preview,
+      }),
+    ],
+  });
 
   app = new App({
     state,
@@ -224,6 +298,7 @@ window.onload = () => {
         tools,
         target: outlineCanvas,
       }),
+      sync,
     ],
   });
 

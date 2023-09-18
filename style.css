@@ -1,8 +1,14 @@
+:root {
+  --transparency: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill-opacity=".05"><rect width="50" height="50" /><rect x="50" y="50" width="50" height="50" /></svg>')
+    0 0 / 20px 20px #f8f8f8;
+}
+
 html,
 body {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  user-select: none;
 }
 
 body {
@@ -15,7 +21,6 @@ body {
 
 canvas {
   outline: 1px solid black;
-  outline-offset: -1px;
 }
 
 i {
@@ -23,8 +28,6 @@ i {
 }
 
 button {
-  height: 50px;
-  width: 50px;
   padding: 5px 12px;
   border: 0;
   outline: 0;
@@ -46,7 +49,7 @@ button:hover {
   width: min-content;
   display: flex;
   flex-direction: column;
-  margin: 5rem;
+  margin: 1rem;
   gap: 10px;
   align-items: center;
 }
@@ -55,19 +58,50 @@ button:hover {
   position: relative;
 }
 
+#art {
+  background: var(--transparency);
+}
+
 #grid,
 #outline {
   position: absolute;
   left: 0;
 }
 
+#preview {
+  outline: none;
+  align-self: center;
+  margin-left: 3rem;
+}
+
 #color-palette {
   min-width: 0;
-  height: min-content;
+  padding: 10px;
   display: grid;
 
   grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
   gap: 0.5rem;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #1a1919 transparent;
+}
+
+#color-palette::-webkit-scrollbar {
+  width: 12px;
+}
+
+#color-palette::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+#color-palette::-webkit-scrollbar-thumb {
+  background-color: #1a1919;
+  border-radius: 20px;
+  border: 3px solid transparent;
+}
+
+#color-palette > button {
+  aspect-ratio: 1;
 }
 
 .selected {
@@ -83,32 +117,42 @@ button:hover {
   border: 1px solid black;
   cursor: pointer;
   aspect-ratio: 1;
-  display: flex;
   position: relative;
-}
-
-input[type="color"] {
-  visibility: hidden;
-  width: 0px;
-  padding: 0;
-  margin: 0;
-  position: absolute;
-  left: 100%;
+  background: linear-gradient(var(--current), var(--current)),
+    var(--transparency);
 }
 
 .edit-color {
   flex: 1;
+  display: flex;
+  height: 100%;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  color: #f1f1f1;
+  background-color: transparent;
+}
+
+.editicon {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .delete {
-  height: 20px;
-  width: 20px;
+  z-index: 100;
+  height: 25px;
+  width: 25px;
+  box-shadow: 0 0 2px 0 black;
   position: absolute;
   padding: 1px 6px;
   font-size: x-small;
+  color: white;
+  border: none;
   border-radius: 50%;
   right: -10px;
   top: -10px;
@@ -126,6 +170,7 @@ input[type="color"] {
   display: flex;
   flex: 0 0;
   gap: 5px;
+  justify-content: end;
 }
 
 #tool-container > button {
