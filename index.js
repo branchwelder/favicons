@@ -3,11 +3,13 @@ import { Bimp } from "./Bimp";
 import { App } from "./App";
 import { grid } from "./grid";
 import { pointerTracker } from "./pointerTracker";
+import { touchTracker } from "./touchTracker";
 import { outline } from "./outline";
 import { brush, flood, line, rect, shift } from "/tools";
 import { drawingCanvas } from "./drawingCanvas";
 import { previewCanvas } from "./previewCanvas";
-import { toolbox } from "./toolbox";
+import { mouseEvents } from "./mouseEvents";
+import { touchEvents } from "./touchEvents";
 
 import jscolor from "@eastdesire/jscolor";
 
@@ -286,22 +288,41 @@ window.onload = () => {
     ],
   });
 
-  app = new App({
-    state,
-    dispatch,
-    components: [
-      drawingCanvas({ canvas: editorCanvas }),
-      grid({ canvas: gridCanvas }),
-      pointerTracker({ target: outlineCanvas }),
-      outline({ canvas: outlineCanvas }),
-      toolbox({
-        tools,
-        target: outlineCanvas,
-      }),
-      sync,
-    ],
-  });
+  console.log(isMobile());
 
+  if (isMobile()) {
+    app = new App({
+      state,
+      dispatch,
+      components: [
+        drawingCanvas({ canvas: editorCanvas }),
+        grid({ canvas: gridCanvas }),
+        touchTracker({ target: outlineCanvas }),
+        outline({ canvas: outlineCanvas }),
+        touchEvents({
+          tools,
+          target: outlineCanvas,
+        }),
+        sync,
+      ],
+    });
+  } else {
+    app = new App({
+      state,
+      dispatch,
+      components: [
+        drawingCanvas({ canvas: editorCanvas }),
+        grid({ canvas: gridCanvas }),
+        pointerTracker({ target: outlineCanvas }),
+        outline({ canvas: outlineCanvas }),
+        mouseEvents({
+          tools,
+          target: outlineCanvas,
+        }),
+        sync,
+      ],
+    });
+  }
   r();
 };
 

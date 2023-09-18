@@ -1,4 +1,4 @@
-function toolboxExtension({ state, dispatch }, { tools, target }) {
+function mouseEventsExtension({ state, dispatch }, { tools, target }) {
   target.addEventListener("pointerdown", (e) => {
     let pos = state.pos;
     let tool = tools[state.activeTool];
@@ -26,6 +26,6 @@ function toolboxExtension({ state, dispatch }, { tools, target }) {
   };
 }
 
-export function toolbox(options = {}) {
-  return (config) => toolboxExtension(config, options);
+export function mouseEvents(options = {}) {
+  return (config) => mouseEventsExtension(config, options);
 }

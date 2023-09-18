@@ -17,7 +17,6 @@ Live at [https://twigg.gg/favicons/](https://twigg.gg/favicons/).
 
 todo
 
-- mobile pointer events
 - hide/show grid
 - undo
 - change cursor to tool
